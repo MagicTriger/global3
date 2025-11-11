@@ -22,9 +22,10 @@
 	        url.flash="plugins/videoplayer.swf"
 	        posterurl="mps/cover/1.jpg"
 	        pausedonstart="false"
+	        autoplay="true"
 	        loop="true"
 	        volume="1.0"
-			muted='true'
+			muted="true"
 	        onloaded="add_video_sources();"
         />
 
