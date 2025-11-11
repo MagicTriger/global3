@@ -1,0 +1,92 @@
+<krpano version="1.19" title="Virtual Tour" showerrors="true" debugmode="true" logkey="true">
+
+	<include url="pf.xml" />
+	<!-- <include url="%SWFPATH%/skin/videointerface.xml" /> -->
+
+
+
+	<action name="startup" autorun="onstart">
+	
+			loadscene(wz1);
+	</action>
+	
+	
+	<scene name="wz1" title="VR视频">
+		
+		<!-- include the videoplayer interface / skin (with VR support) -->
+		<include url="skin/videointerface.xml" />
+
+		<!-- include the videoplayer plugin -->
+		<plugin name="video"
+	        url.html5="plugins/videoplayer.js"
+	        url.flash="plugins/videoplayer.swf"
+	        posterurl="mps/cover/1.jpg"
+	        pausedonstart="false"
+	        loop="true"
+	        volume="1.0"
+			muted='true'
+	        onloaded="add_video_sources();"
+        />
+
+		<!-- use the videoplayer plugin as panoramic image source -->
+		<image>
+			<sphere url="plugin:video" />
+		</image>
+
+		<!-- set the default view -->
+		<view hlookat="-90" vlookat="20"
+		 hlookatmin='-180' hlookatmax='90' vlookatmin='-80' vlookatmax='80'
+		  fovtype="DFOV" fov="120" fovmin="75" fovmax="140" distortion="0.0" limitview="fullrange" />
+		
+
+		<!-- add the video sources and play the video -->
+		<action name="add_video_sources">
+			videointerface_addsource('4k画质', 'mps/high/video.mp4');
+			videointerface_addsource('2k画质', 'mps/super/video.mp4');
+			videointerface_addsource('1k画质', 'mps/standard/video.mp4');
+			videointerface_play('4k画质');
+		</action>
+
+		<hotspot onclick='js(hotclick({
+			title: "海康威视智能摄像头",
+			image: "./logo.png",
+			message: "这是一款高清智能摄像头，支持夜视和移动侦测功能，广泛应用于园区安防系统。采用最新AI技术，能够智能识别人脸和车牌。",
+			details: [
+				"分辨率：1920x1080 Full HD",
+				"视角：110度广角镜头",
+				"夜视距离：红外夜视30米",
+				"防水等级：IP67 防尘防水",
+				"存储：支持最大128GB TF卡",
+				"智能功能：人脸识别、移动侦测、区域入侵检测",
+				"供电方式：PoE供电/DC12V",
+				"工作温度：-30°C ~ 60°C"
+			]
+		}))' url='./hots/spotd4_gif.png' ath='-90' onloaded="do_crop_animation(128,128, 10);"/>
+	</scene>
+	<action name="do_crop_animation" scope="local" args="framewidth, frameheight, framerate">
+		<!-- 定义局部变量 -->
+		calc(local.xframes, (caller.imagewidth /framewidth) BOR 0);
+		calc(local.frames, xframes * ((caller.imageheight / frameheight) BOR 0));
+		def(local.frame, integer, 0);
+	
+		<!-- 设置第一帧 -->
+		calc(caller.crop, '0|0|' + framewidth + '|' + frameheight);
+	
+		<!-- 动画部分 -->
+		setinterval(calc('crop_anim_' + caller.name), calc(1.0 / framerate),
+			if(caller.loaded,
+				inc(frame);
+				if(frame GE frames, if(caller.onlastframe !== null, callwith(caller, onlastframe() ) ); set(frame,0); );
+				mod(xpos, frame, xframes);
+				div(ypos, frame, xframes);
+				Math.floor(ypos);
+				mul(xpos, framewidth);
+				mul(ypos, frameheight);
+				calc(caller.crop, xpos + '|' + ypos + '|' + framewidth + '|' + frameheight);
+			,
+			<!-- 当热点移除时停止动画 -->
+				clearinterval(calc('crop_anim_' + caller.name));
+			);
+		);
+	</action>
+</krpano>

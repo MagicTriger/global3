@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>海康威视园区产品VR展示</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<meta http-equiv="x-ua-compatible" content="IE=edge" />
+	<style>
+		@-ms-viewport { width:device-width; }
+		@media only screen and (min-device-width:800px) { html { overflow:hidden; } }
+		html { height:100%; }
+		body { height:100%; overflow:hidden; margin:0; padding:0; font-family:Arial, Helvetica, sans-serif; font-size:16px; color:#FFFFFF; background-color:#000000; }
+		.logo{
+			position: fixed;
+			left: 20px;
+			top: 20px;
+			display: flex;
+			height: 40px;
+			line-height: 40px;
+			z-index: 100;
+		}
+		.logo img{
+			height: 40px;
+			width: 40px;
+		}
+		
+		/* 自定义弹窗样式 */
+		.custom-modal {
+			display: none;
+			position: fixed;
+			z-index: 1000;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.6);
+			animation: fadeIn 0.3s;
+		}
+		
+		.modal-content {
+			position: relative;
+			background-color: #ffffff;
+			margin: 15% auto;
+			padding: 0;
+			width: 80%;
+			max-width: 500px;
+			border-radius: 8px;
+			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+			animation: slideDown 0.3s;
+		}
+		
+		.modal-header {
+			padding: 20px;
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+			color: white;
+			border-radius: 8px 8px 0 0;
+			font-size: 18px;
+			font-weight: bold;
+		}
+		
+		.modal-body {
+			padding: 20px;
+			color: #333;
+			font-size: 16px;
+			line-height: 1.6;
+			max-height: 60vh;
+			overflow-y: auto;
+		}
+		
+		.modal-image {
+			width: 100%;
+			max-height: 300px;
+			object-fit: cover;
+			border-radius: 5px;
+			margin-bottom: 15px;
+		}
+		
+		.modal-description {
+			margin-bottom: 15px;
+		}
+		
+		.modal-details {
+			background-color: #f8f9fa;
+			padding: 15px;
+			border-radius: 5px;
+			border-left: 4px solid #667eea;
+		}
+		
+		.modal-details-title {
+			font-weight: bold;
+			color: #667eea;
+			margin-bottom: 10px;
+			font-size: 14px;
+		}
+		
+		.modal-details-content {
+			color: #666;
+			font-size: 14px;
+			line-height: 1.8;
+		}
+		
+		.modal-details-content p {
+			margin: 5px 0;
+		}
+		
+		.modal-footer {
+			padding: 15px 20px;
+			text-align: right;
+			border-top: 1px solid #eee;
+			border-radius: 0 0 8px 8px;
+		}
+		
+		.modal-close-btn {
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+			color: white;
+			border: none;
+			padding: 10px 30px;
+			border-radius: 5px;
+			cursor: pointer;
+			font-size: 14px;
+			font-weight: bold;
+			transition: transform 0.2s, box-shadow 0.2s;
+		}
+		
+		.modal-close-btn:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+		}
+		
+		@keyframes fadeIn {
+			from { opacity: 0; }
+			to { opacity: 1; }
+		}
+		
+		@keyframes slideDown {
+			from {
+				transform: translateY(-50px);
+				opacity: 0;
+			}
+			to {
+				transform: translateY(0);
+				opacity: 1;
+			}
+		}
+		
+		@media (max-width: 600px) {
+			.modal-content {
+				width: 90%;
+				margin: 30% auto;
+			}
+		}
+	</style>
+</head>
+<body>
+<div class="logo">
+	<img src="./logo.png" alt="公司Logo">
+	<div>上海炯眼网络科技有限公司</div>
+</div>
+
+<!-- 自定义弹窗 -->
+<div id="customModal" class="custom-modal">
+	<div class="modal-content">
+		<div class="modal-header">
+			<span id="modalTitle">提示信息</span>
+		</div>
+		<div class="modal-body" id="modalBody">
+			<p>加载中...</p>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="modal-close-btn" onclick="closeModal()">确定</button>
+		</div>
+	</div>
+</div>
+
+<script src="tour.js"></script>
+
+<div id="pano" style="width:100%;height:100%;">
+	<noscript><table style="width:100%;height:100%;"><tr style="vertical-align:middle;"><td><div style="text-align:center;">ERROR:<br/><br/>Javascript not activated<br/><br/></div></td></tr></table></noscript>
+	<script>
+		embedpano({swf:"tour.swf", xml:"tour.xml", target:"pano", html5:"auto", mobilescale:1.0, passQueryParameters:true});
+	
+		// 显示自定义弹窗（支持详细内容）
+		function showModal(data) {
+			const modal = document.getElementById('customModal');
+			const modalTitle = document.getElementById('modalTitle');
+			const modalBody = document.getElementById('modalBody');
+			
+			// 如果传入的是字符串，转换为对象
+			if (typeof data === 'string') {
+				data = { title: '热点信息', message: data };
+			}
+			
+			// 设置标题
+			modalTitle.textContent = data.title || '热点信息';
+			
+			// 构建内容
+			let contentHTML = '热点点击成功，测试成功！';
+			
+			// 添加图片
+			if (data.image) {
+				contentHTML += `<img src="${data.image}" alt="${data.title || '热点图片'}" class="modal-image">`;
+			}
+			
+			// 添加主要描述
+			if (data.message) {
+				contentHTML += `<div class="modal-description">${data.message}</div>`;
+			}
+			
+			// 添加详细信息
+			if (data.details) {
+				contentHTML += `
+					<div class="modal-details">
+						<div class="modal-details-title">详细信息</div>
+						<div class="modal-details-content">
+							${Array.isArray(data.details) 
+								? data.details.map(item => `<p>• ${item}</p>`).join('') 
+								: `<p>${data.details}</p>`
+							}
+						</div>
+					</div>
+				`;
+			}
+			
+			modalBody.innerHTML = contentHTML || '<p>暂无详细信息</p>';
+			modal.style.display = 'block';
+			
+			// 点击背景关闭弹窗
+			modal.onclick = function(event) {
+				if (event.target === modal) {
+					closeModal();
+				}
+			}
+		}
+		
+		// 关闭弹窗
+		function closeModal() {
+			const modal = document.getElementById('customModal');
+			modal.style.display = 'none';
+		}
+		
+		// 热点点击事件
+		window.hotclick = (val) => {
+			// 支持传入字符串或对象
+			showModal(val);
+		}
+		
+		
+		// ESC键关闭弹窗
+		document.addEventListener('keydown', function(event) {
+			if (event.key === 'Escape') {
+				closeModal();
+			}
+		});
+	</script>
+</div>
+
+</body>
+</html>

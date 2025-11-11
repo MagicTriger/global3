@@ -1,0 +1,92 @@
+<krpano >
+
+	<layer name="btn_fx" url="fx.png" keep="true" visible="true" width="130" height="130" align="bottom"  y="100" />
+
+	<layer name="btn_left" type="text" keep="true" visible="true" bg="false" width="40" height="40" align="bottom" x="-45" y="145"  ondown="set(hlookat_moveforce,-1);" onup="set(hlookat_moveforce,0);" />
+
+	<layer name="btn_right" type="text" keep="true" visible="true" bg="false" width="40" height="40" align="bottom" x="45" y="145" ondown="set(hlookat_moveforce,+1);" onup="set(hlookat_moveforce,0);" />
+
+	<layer name="btn_up" type="text" keep="true" visible="true" bg="false" width="40" height="40" align="bottom" x="0" y="100" ondown="set(vlookat_moveforce,+1);" onup="set(vlookat_moveforce,0);" />
+
+	<layer name="btn_down" type="text" keep="true" visible="true" bg="false" width="40" height="40" align="bottom" x="0" y="190" ondown="set(vlookat_moveforce,-1);" onup="set(vlookat_moveforce,0);" />
+
+
+  <hotspot name="bg_enter" type="text" keep="true" html="" distorted="true" visible="false" ath="15" atv="3" width="180" height="180" align="center" zorder="2" onclick="start1();" bgcolor="0x000000" bgalpha="0" css="color:#FFFFFF;line-height:120px;text-align:center;font-size:22px;" bgroundedge="10" /> -->
+   	
+  <events name="plugin" keep="true" 
+		onvideoplay = "setinterval(timec,1,time_action());"
+	/>
+
+	<events name="bg_img_resize" keep="true"
+		onresize="bg_resize();"
+		onidle="qiehuanVR_video_time();"
+	/>
+	<!-- <style name="skin_base" url="vtourskin.png" />
+		<style name="skin_title" roundedge="0" align="leftbottom" keep="true" zorder="4" backgroundcolor="0x000000" background="false" backgroundalpha="0.5" border="false" css="text-align:center; color:#FFFFFF; font-family:Arial;font-size:12px;" textshadow="1" />
+
+		<layer name="Right_Control_bar" keep="true" type="container" align="rightbottom" width="30" height="50%" x="10" y="-30" zorder="1">
+			<layer name="Right_Control_bar_A" type="container" align="left" x="15" y="0" zorder="1">
+				<layer name="Right_Control_bar_Vr" style="skin_base" x="0" y="110" crop="0|64|64|64" align="center" scale="0.5" alpha="0.5" onclick="webvr.enterVR();" onhover="showtext(VR,STYLE2);" />
+				<layer name="Right_Control_bar_Vr_title" style="skin_title" x="0" y="135" align="center" url="../plugins/textfield.swf" html="VR" />
+			</layer>
+		</layer> -->
+		
+
+	<action name="bg_resize">
+		set(layer[bg_img].width,calc:stagewidth);
+		set(layer[bg_img].height,calc:stageheight);
+	</action>
+
+	<action name="start1" >
+		<!-- shijian 时间修改位置 -->
+		set(idletime,50);
+		set(enterVrVideo,false);
+		set(layer[container_obj].visible,false);
+		plugin[video].play();
+		set(hotspot[bg_enter].visible,false);
+		setinterval(timec,1,time_action());
+		removehotspot('vr_cursor');
+
+
+		<!-- plugin[video].closevideo(); -->
+
+ 	</action>
+
+ 	<action name="time_action">
+ 		set(a,get(plugin[video].time));
+ 		set(b,get(plugin[video].totaltime));
+ 		
+ 		roundval(a);
+ 		roundval(b);
+
+ 		if(a == 188,  //时间 秒
+ 			plugin[video].pause();
+			set(hotspot[bg_enter].visible,true);
+      		set(hotspot[vr_cursor].bgalpha,0);
+			webvr_load_vr_cursor_hs();
+
+ 		);
+      
+       if(a == b,
+			clearinterval(timec);
+ 		);
+ 	</action>
+
+	<action name="qiehuanVR_video_time">
+		if(enterVrVideo == true,
+			start();
+		);
+	</action>
+		<!-- set(plugin[videospot].onclick,'qiehuanVR_video();'); -->
+
+	<action name="qiehuanVR_video">
+		set(enterVrVideo,true);
+		loadscene(get(vrshipin_id));
+		
+		removeplugin(videospot);
+	</action>
+ 
+
+
+
+</krpano> 
