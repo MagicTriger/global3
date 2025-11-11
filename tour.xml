@@ -14,7 +14,7 @@
 	<scene name="wz1" title="VR视频">
 		
 		<!-- include the videoplayer interface / skin (with VR support) -->
-		<include url="skin/videointerface.xml" />
+		<!-- <include url="skin/videointerface.xml" /> -->
 
 		<!-- include the videoplayer plugin -->
 		<plugin name="video"
@@ -42,10 +42,7 @@
 
 		<!-- add the video sources and play the video -->
 		<action name="add_video_sources">
-			videointerface_addsource('4k画质', 'mps/high/video.mp4');
-			videointerface_addsource('2k画质', 'mps/super/video.mp4');
-			videointerface_addsource('1k画质', 'mps/standard/video.mp4');
-			videointerface_play('4k画质');
+			plugin[video].playsound('mps/high/video.mp4');
 		</action>
 
 		<hotspot onclick='js(hotclick({
